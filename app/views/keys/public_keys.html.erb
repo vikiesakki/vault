@@ -1,0 +1,66 @@
+<% content_for :header_tags do %>
+  <%= stylesheet_link_tag "font-awesome.css", :plugin => "vault" %>
+  <%= stylesheet_link_tag "font-awesome.min.css", :plugin => "vault" %>
+  <%= javascript_include_tag 'vault', :plugin => 'vault' %>
+<% end %>
+
+<h2>
+<%= t('key.title.list') %>
+<%= form_tag({}, method: 'get') do %>
+  <%= text_field_tag(:query, @query, class: 'autocomplete') %>
+
+      <font size="2">
+      <%= radio_button_tag(:search_fild, "name", @search_fild == 'name' ? true : false ) %>
+      <%= label_tag(:name, t('key.attr.name')) %>
+
+      <%= radio_button_tag(:search_fild, "url", @search_fild == 'url' ? true : false ) %>
+      <%= label_tag(:url, t('key.attr.url')) %>
+
+      <%= radio_button_tag(:search_fild, "tag", @search_fild == 'tag' ? true : false ) %>
+      <%= label_tag(:tag, t('key.attr.tags')) %>
+      </font>
+
+  <%= submit_tag(t('button_update')) %>
+<% end %>
+<%= button_to(t('button_clear'), {query: ''}, method: 'get') %>
+</h2>
+
+<%= form_tag({}) do %>
+<table class='list' id='keys_table'>
+  <thead><tr>
+    <%= sort_header_tag('name', caption: t('key.attr.name')) %>
+    <th><%= t('key.attr.url') %></th>
+    <th><%= t('key.attr.login') %></th>
+    <th><%= t('key.attr.body') %> </th>
+  </tr></thead>
+  <tbody>
+    <% @keys.each do |key| %>
+        <tr>
+          <td><%= key.name %></td>
+          <td><%= key.url %></td>
+          <td><%= key.login %></td>
+          <td><label id='plain_pass'><%= key.body %></label></td>
+        </tr>
+    <% end %>
+  </tbody>
+</table>
+<% end %>
+
+<% if Redmine::VERSION.to_s.start_with?('3.3')  %>
+    <span class='pagination'><%= pagination_links_full @key_pages, @key_count %></span>
+<% elsif Redmine::VERSION.to_s.start_with?('3.2') %>
+    <span class='pagination'><%= pagination_links_full @key_pages, @key_count %></span>
+<% elsif Redmine::VERSION.to_s.start_with?('3.1') %>
+    <span class='pagination'><%= pagination_links_full @key_pages, @key_count %></span>
+<% else %>
+    <span class='pagination'><%= pagination_links_full @key_pages, @key_count %></span>
+<% end %>
+<!--
+<% other_formats_links do |f| %>
+    <%= f.link_to_with_query_parameters t('export.title.pdf') if User.current.allowed_to?(:view_keys, @project) if User.current.allowed_to?(:export_keys, @project)%>
+<% end %>
+-->
+<script type="text/javascript">
+  $('a[href^="http://"]').attr('target','_blank');
+  $('a[href^="https://"]').attr('target','_blank');
+</script>
